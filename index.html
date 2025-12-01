@@ -1,43 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no">
-    <title>TG WebApp → Game</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no">
+<title>TG GAME</title>
 
-    <style>
-        html, body {
-            margin:0; padding:0;
-            width:100%; height:100vh;
-            overflow:hidden;
-            background:#000;
-        }
-        iframe{
-            width:100vw;
-            height:100vh;
-            border:none;
-        }
-    </style>
+<style>
+body,html{
+    margin:0;padding:0;
+    width:100%;height:100vh;
+    overflow:hidden;background:#000;
+}
+iframe{
+    width:100vw;height:100vh;border:0;
+}
+</style>
 </head>
 
 <body>
-    <iframe id="app"></iframe>
+<iframe id="app" allow="autoplay; fullscreen" src=""></iframe>
 
 <script>
-const GAME_URL = "https://appcfp.wpoker.io/?context=eyJ0cmliZUlkIjoiIiwiY2x1YiI6MTAwMDAwMTU0Nn0%3D"; ///← 你的目标游戏链接（已内置）
+const GAME = "https://appcfp.wpoker.io/?context=eyJ0cmliZUlkIjoiIiwiY2x1YiI6MTAwMDAwMTU0Nn0%3D"; //← 固定直进，无需URL
 
-function loadGame(){
-    document.querySelector("#app").src = GAME_URL;
+function openGame(){
+    document.getElementById("app").src = GAME;
 
     if(window.Telegram && Telegram.WebApp){
         Telegram.WebApp.ready();
-        Telegram.WebApp.expand();               // ⛔强制最高权限占满全屏
-        Telegram.WebApp.disableVerticalSwipes(); // ⛔禁止下滑退出
+        Telegram.WebApp.expand();               // ⭐强制全屏
+        Telegram.WebApp.disableVerticalSwipes(); // ⭐禁止下滑退出
     }
 }
-
-loadGame();
+openGame();
 </script>
-
 </body>
 </html>
