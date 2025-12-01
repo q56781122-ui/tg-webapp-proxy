@@ -1,0 +1,9 @@
+{
+  "name": "AK WebApp",
+  "short_name": "AKPoker",
+  "start_url": "/?start=1",
+  "display": "standalone",
+  "background_color": "#000000",
+  "description": "AKPoker Telegram WebApp",
+  "icons": []
+}
