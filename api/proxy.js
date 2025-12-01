@@ -1,38 +1,42 @@
-export default async function handler(req, res) {
-  const { url } = req.query;
-  if (!url) return res.status(400).send("Missing url");
+export const config = {
+  runtime: "edge" // 🚀 Edge 加速，否则加载会超时/空白
+};
 
-  const target = decodeURIComponent(url);
+export default async (req) => {
+  const { searchParams } = new URL(req.url);
+  let url = searchParams.get("url");
+  if (!url) return new Response("❌ Missing url", { status: 400 });
 
-  try {
-    const response = await fetch(target, {
-      method: "GET",
-      redirect: "follow",        // ⬅ 跟随跳转 VERY IMPORTANT
-      headers: {
-        "Referer": "https://appcfp.wpoker.io/",
-        "Origin": "https://appcfp.wpoker.io",
-        "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Language": "zh-CN,zh;q=0.9",
-        "Cache-Control": "no-cache",
-      }
-    });
+  url = decodeURIComponent(url);
 
-    let body = await response.text();
+  // 代理请求
+  const response = await fetch(url, {
+    headers: {
+      "Referer": "https://appcfp.wpoker.io/",
+      "Origin": "https://appcfp.wpoker.io",
+      "User-Agent": "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1"
+    },
+    redirect: "follow"
+  });
 
-    // ⛔ 删除 CSP 头（不删无法加载脚本）
-    res.removeHeader("Content-Security-Policy");
-    res.setHeader("Content-Security-Policy", "");
+  let body = await response.text();
 
-    // 🔥 强制所有 JS / CSS / 图片走代理
-    body = body.replace(/src=\"\//g, `src="/api/proxy?url=${target}`);
-    body = body.replace(/href=\"\//g, `href="/api/proxy?url=${target}`);
+  // ███ 解锁关键点：去 CSP、去安全限制  ███
+  body = body.replace(/Content-Security-Policy/gi, "");
+  body = body.replace(/frame-ancestors[^;]+;?/gi, "");
+  body = body.replace(/X-Frame-Options:[^\n]+/gi, "");
 
-    // 输出游戏内容
-    res.setHeader("Content-Type", "text/html;charset=utf-8");
-    res.status(200).send(body);
+  // ███ 强制资源全部通过代理加载 ███
+  const rewrite = (content) =>
+    content
+      .replace(/src="(https?:\/\/[^"]+)"/g, `src="/api/proxy?url=$1"`)
+      .replace(/href="(https?:\/\/[^"]+)"/g, `href="/api/proxy?url=$1"`)
+      .replace(/src="\/([^"]+)"/g, `src="/api/proxy?url=https://appcfp.wpoker.io/$1"`)
+      .replace(/href="\/([^"]+)"/g, `href="/api/proxy?url=https://appcfp.wpoker.io/$1"`);
 
-  } catch (err) {
-    res.status(500).send("Proxy Error => " + err.message);
-  }
-}
+  body = rewrite(body);
+
+  return new Response(body, {
+    headers: { "Content-Type": "text/html; charset=utf-8" }
+  });
+};
