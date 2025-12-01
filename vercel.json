@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/proxy/(.*)", "destination": "/api/proxy?url=https://appcfp.wpoker.io/$1" }
+  ]
+}
