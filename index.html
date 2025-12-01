@@ -1,43 +1,34 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>天天德州</title>
-
-    <style>
-        html, body {
-            margin:0;
-            padding:0;
-            overflow:hidden;
-            background:#000;
-            height:100vh;
-        }
-        iframe{
-            border:none;
-            width:100vw;
-            height:100vh;
-        }
-    </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>WebApp Bridge</title>
+<style>
+html,body{
+    margin:0;padding:0;background:#000;height:100vh;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;color:white;font-size:18px;
+}
+#loading{animation:flash 1.5s infinite;}
+@keyframes flash{0%,100%{opacity:.3}50%{opacity:1}}
+</style>
 </head>
 <body>
+<div id="loading">正在跳转，请稍候…</div>
 
-    <iframe id="gameFrame"></iframe>
+<script>
+const target = "https://appcfp.wpoker.io/?context=eyJ0cmliZUlkIjoiIiwiY2x1YiI6MTAwMDAwMTU0Nn0%3D";
 
-    <script>
-        const urlParam = new URLSearchParams(location.search).get("url");
-
-        // 默认跳入你的目标页面（你可以随时换）
-        const target = urlParam || "https://appcfp.wpoker.io/?context=eyJ0cmliZUlkIjoiIiwiY2x1YiI6MTAwMDAwMTU0Nn0%3D";
-
-        document.getElementById("gameFrame").src = target;
-
-        if (window.Telegram && Telegram.WebApp) {
-            Telegram.WebApp.ready();
-            Telegram.WebApp.expand(); // 强制全屏
-        }
-    </script>
-
+// 🔥Telegram 内运行 — 直接全屏 & 跳转
+if (window.Telegram && Telegram.WebApp) {
+    Telegram.WebApp.ready();
+    Telegram.WebApp.expand();
+    Telegram.WebApp.openLink(target, { try_instant_view: false });
+} else {
+    // 浏览器打开（PC预览）用 iframe 过桥
+    document.body.innerHTML = `<iframe src="${target}" 
+        style="border:none;width:100vw;height:100vh;"></iframe>`;
+}
+</script>
 </body>
 </html>
