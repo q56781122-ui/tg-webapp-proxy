@@ -1,56 +1,43 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Loading...</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0,user-scalable=no">
+    <title>TG WebApp → Game</title>
 
-<style>
-html, body {
-    margin: 0;
-    padding: 0;
-    width:100vw;
-    height:100vh;
-    overflow:hidden;
-    background:#000;
-}
-iframe {
-    width:100vw;
-    height:100vh;
-    border:none;
-}
-.loading{
-    position:fixed;top:0;left:0;width:100%;height:100%;
-    display:flex;justify-content:center;align-items:center;
-    font-size:20px;color:white;background:#000;
-}
-</style>
+    <style>
+        html, body {
+            margin:0; padding:0;
+            width:100%; height:100vh;
+            overflow:hidden;
+            background:#000;
+        }
+        iframe{
+            width:100vw;
+            height:100vh;
+            border:none;
+        }
+    </style>
 </head>
 
 <body>
-<div id="load" class="loading">正在载入页面...</div>
+    <iframe id="app"></iframe>
 
 <script>
-// Telegram WebApp 全屏适配
-if (window.Telegram && Telegram.WebApp) {
-    Telegram.WebApp.ready();
-    Telegram.WebApp.expand(); 
-    Telegram.WebApp.disableVerticalSwipe(); 
+const GAME_URL = "https://appcfp.wpoker.io/?context=eyJ0cmliZUlkIjoiIiwiY2x1YiI6MTAwMDAwMTU0Nn0%3D"; ///← 你的目标游戏链接（已内置）
+
+function loadGame(){
+    document.querySelector("#app").src = GAME_URL;
+
+    if(window.Telegram && Telegram.WebApp){
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();               // ⛔强制最高权限占满全屏
+        Telegram.WebApp.disableVerticalSwipes(); // ⛔禁止下滑退出
+    }
 }
 
-// ⚠ UA伪装，解决手机打不开、停在首页、跳到Vercel的问题
-Object.defineProperty(navigator,"userAgent",{get:()=> 
-"Mozilla/5.0 (iPhone; CPU iPhone OS 14_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.0 Mobile/15E148 Safari/604.1"
-});
-
-// 你的最终目标落地页 (📌 我已替你写死，不再传参)
-let target = "https://appcfp.wpoker.io/?context=eyJ0cmliZUlkIjoiIiwiY2x1YiI6MTAwMDAwMTU0Nn0%3D";
-
-// ★ 自动全屏载入
-let iframe = document.createElement("iframe");
-iframe.src = target;
-document.body.appendChild(iframe);
-document.getElementById("load").remove();
+loadGame();
 </script>
+
 </body>
 </html>
