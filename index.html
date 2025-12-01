@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Telegram WebApp Proxy</title>
+
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    background: #000;
+    height: 100vh;
+    overflow: hidden;
+}
+iframe{
+    width:100vw;
+    height:100vh;
+    border:none;
+}
+</style>
+
+<script>
+function start(){
+    if(window.Telegram && Telegram.WebApp){
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand(); // ← 强制全屏核心
+        Telegram.WebApp.disableVerticalSwipe();
+    }
+
+    let url = new URLSearchParams(location.search).get("url");
+    if(!url){
+        document.body.innerHTML = "<h2 style='color:white;text-align:center;margin-top:40%'>❌ Missing URL<br><small>?url=xxx</small></h2>";
+        return;
+    }
+    document.body.innerHTML = `<iframe src="${url}"></iframe>`;
+}
+
+window.onload=start;
+</script>
+</head>
+<body></body>
+</html>
