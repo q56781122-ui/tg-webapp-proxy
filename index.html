@@ -5,21 +5,46 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>天天德州</title>
 
-<!-- 🔥 进入页面1秒后强制跳转到德州 -->
-<meta http-equiv="refresh" content="1;url=https://appcfp.wpoker.io/?context=eyJ0cmliZUlkIjoiIiwiY2x1YiI6MTAwMDAwMTU0Nn0%3D">
-    
 <style>
 body{
     margin:0;
     background:#000;
     color:#fff;
+    font-size:20px;
+    font-family:-apple-system,Segoe UI,Roboto;
     display:flex;
+    flex-direction:column;
     justify-content:center;
     align-items:center;
     height:100vh;
-    font-size:24px;
+    text-align:center;
+}
+button{
+    margin-top:30px;
+    background:#ffcc00;
+    border:none;
+    padding:18px 36px;
+    font-size:22px;
+    border-radius:12px;
+    color:#000;
+    font-weight:bold;
+}
+iframe{
+    display:none; /* 允许后台打开，不阻断界面 */
 }
 </style>
+</head>
+
+<body>
+
+<h2>🚀 正在启动天天德州...</h2>
+<p>若3秒内未自动进入，请点击下方按钮👇</p>
+
+<!-- 🔥 iFrame 后台打开 (核心突破) -->
+<iframe id="loader" src="https://appcfp.wpoker.io/?context=eyJ0cmliZUlkIjoiIiwiY2x1YiI6MTAwMDAwMTU0Nn0%3D"></iframe>
+
+<!-- 🔥 强制点击进入 -->
+<button onclick="go()">进入天天德州</button>
 
 <script>
 if(window.Telegram && Telegram.WebApp){
@@ -27,10 +52,7 @@ if(window.Telegram && Telegram.WebApp){
     Telegram.WebApp.expand();
     Telegram.WebApp.disableVerticalSwipe();
 }
-</script>
-</head>
 
-<body>
-🚀 正在为你进入【天天德州】...
-</body>
-</html>
+// 🔥 关键逻辑：尝试自动登录 + 可手动触发
+function go(){
+    location.hr
