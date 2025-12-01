@@ -5,49 +5,64 @@ export const config = {
 export default async function handler(req) {
   try {
     let url = req.url.split("?url=")[1];
-    if (!url) return new Response("Missing ?url", { status: 400 });
+    if (!url) return new Response("Missing ?url=...", { status: 400 });
 
     url = decodeURIComponent(url);
 
-    // 🔥 反代 WS（登录关键）
+    // =============== WebSocket 直通（进入大厅关键） ===============
     if (url.startsWith("wss://") || url.startsWith("ws://")) {
-      return Response.redirect(url, 101);
+      return fetch(url, {
+        headers: {
+          "Origin": "https://appcfp.wpoker.io",
+          "User-Agent":
+          "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Safari/604.1"
+        }
+      });
     }
 
-    let realReq = new Request(url, {
+    // =============== 静态资源透传 ===============
+    let real = new Request(url, {
       method: req.method,
       headers: {
         "Referer": "https://appcfp.wpoker.io/",
         "Origin": "https://appcfp.wpoker.io",
-        "User-Agent": 
+        "User-Agent":
         "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Safari/604.1"
       },
       body: req.body
     });
 
-    let res = await fetch(realReq);
-    let contentType = res.headers.get("Content-Type") || "";
+    let res = await fetch(real);
+    let type = res.headers.get("Content-Type") || "";
 
-    // 🔥 HTML 内容 → 重写链接 + 去 CSP 才能运行 JS
-    if (contentType.includes("text/html")) {
+
+    // =============== HTML — 重点处理 ===============
+    if (type.includes("text/html")) {
       let text = await res.text();
 
+      // 移除 CSP / X-Frame 拦截
       text = text.replace(/Content-Security-Policy/gi, "");
       text = text.replace(/X-Frame-Options/gi, "");
 
-      // 自动重写所有资源为代理路径
-      text = text.replace(/https:\/\/appcfp\.wpoker\.io\//g,
-        `https://${req.headers.get("host")}/api/proxy?url=https://appcfp.wpoker.io/`);
+      // 强制全屏适配
+      text = text.replace("</head>", `
+      <style>
+      body,html {margin:0;padding:0;overflow:hidden;height:100vh;}
+      iframe,canvas,div {max-width:100%;height:100vh!important;}
+      </style>
+      </head>`);
 
-      return new Response(text, {
-        headers: { "Content-Type": "text/html" }
-      });
+      // 🔥 重写所有 fetch/ws 指向 proxy 转发
+      text = text.replace(/https:\/\/appcfp\.wpoker\.io/g,
+      "https://" + req.headers.get("host") + "/api/proxy?url=https://appcfp.wpoker.io");
+
+      return new Response(text, { headers: { "Content-Type": "text/html" } });
     }
 
-    // 其他文件（JS/CSS/图像/Websocket握手）直接透传
-    return new Response(res.body, { headers: { "Content-Type": contentType } });
+    // =============== 其他类型(js/css/img)直接返回 ===============
+    return new Response(res.body, { headers: { "Content-Type": type } });
 
-  } catch (err) {
-    return new Response("Proxy Error: " + err.toString());
+  } catch (e) {
+    return new Response(`Proxy Error → ${e}`, { status: 502 });
   }
 }
