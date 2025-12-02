@@ -1,40 +1,40 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AK Poker WebApp</title>
+
 <style>
 html, body {
-  margin:0; padding:0;
-  width:100%; height:100%;
-  overflow:hidden;
-  background:#000;
+    margin:0;
+    padding:0;
+    width:100vw;
+    height:100vh;
+    overflow:hidden;
+    background:black;
 }
 iframe {
-  width:100vw; height:100vh;
-  border:0; background:#000;
+    width:100vw;
+    height:100vh;
+    border:none;
 }
 </style>
 </head>
 
 <body>
-<iframe id="game"></iframe>
+
+<!-- 游戏地址放在 iframe，不是浏览器直接访问 -->
+<iframe src="https://appcfp.wpoker.io/?context=eyJ0cmliZUlkIjoiIiwiY2x1YiI6MTAwMDAwMTU0Nn0%3D"></iframe>
 
 <script>
-const GAME_URL = "https://appcfp.wpoker.io/?context=eyJ0cmliZUlkIjoiIiwiY2x1YiI6MTAwMDAwMTU0Nn0%3D";
-
-function load(){
-    const f = document.getElementById("game");
-    f.src = GAME_URL;
-
-    if(window.Telegram && Telegram.WebApp){
-        Telegram.WebApp.ready();
-        Telegram.WebApp.expand();               //🚀 真正强制全屏
-        Telegram.WebApp.disableVerticalSwipes(); //🚀 禁止下滑返回
-    }
+if(window.Telegram && Telegram.WebApp){
+    Telegram.WebApp.ready();
+    Telegram.WebApp.expand();                 // 自动全屏
+    Telegram.WebApp.isFullscreen = true;
+    Telegram.WebApp.disableVerticalSwipes();  // 禁止下滑退出
 }
-load();
 </script>
+
 </body>
 </html>
