@@ -2,39 +2,62 @@
 <html>
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>AK Poker WebApp</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AK游戏</title>
 
 <style>
-html, body {
-    margin:0;
-    padding:0;
-    width:100vw;
-    height:100vh;
-    overflow:hidden;
-    background:black;
-}
-iframe {
-    width:100vw;
-    height:100vh;
-    border:none;
-}
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+        background: #000;
+    }
+
+    #frame {
+        width: 100%;
+        height: 100%;
+        border: none;
+        display: block;
+    }
 </style>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<script>
+function initWebApp(){
+    try {
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();                     // 强制全屏
+        Telegram.WebApp.disableVerticalSwipes();      // 禁止折叠
+    } catch (e){
+        console.log("WebApp not loaded", e);
+    }
+}
+
+document.addEventListener("DOMContentLoaded", initWebApp);
+window.addEventListener("DOMContentLoaded", initWebApp);
+window.addEventListener("load", initWebApp);
+
+// 自动读取 ?url= 参数
+function loadGame(){
+    const params = new URLSearchParams(window.location.search);
+    const target = params.get("url");
+
+    if (!target){
+        document.body.innerHTML = "<h2 style='color:white'>❌ 缺少 URL 参数</h2>";
+        return;
+    }
+
+    const iframe = document.getElementById("frame");
+    iframe.src = target;
+}
+
+window.onload = loadGame;
+</script>
 </head>
 
 <body>
-
-<!-- 游戏地址放在 iframe，不是浏览器直接访问 -->
-<iframe src="https://appcfp.wpoker.io/?context=eyJ0cmliZUlkIjoiIiwiY2x1YiI6MTAwMDAwMTU0Nn0%3D"></iframe>
-
-<script>
-if(window.Telegram && Telegram.WebApp){
-    Telegram.WebApp.ready();
-    Telegram.WebApp.expand();                 // 自动全屏
-    Telegram.WebApp.isFullscreen = true;
-    Telegram.WebApp.disableVerticalSwipes();  // 禁止下滑退出
-}
-</script>
-
+    <iframe id="frame"></iframe>
 </body>
 </html>
